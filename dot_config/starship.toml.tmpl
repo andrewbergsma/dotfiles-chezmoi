@@ -44,13 +44,6 @@ style = "fg:{{ $host.bg }} bg:{{ $host.accent }}"
 format = "[ $path ]($style)"
 truncation_length = 0
 
-[directory.substitutions]
-"Documents" = "󰈙 "
-"Downloads" = " "
-"Music" = " "
-"Pictures" = " "
-"Projects" = " "
-"dotfiles" = " "
 
 # ============================================================================
 # GIT
@@ -68,9 +61,7 @@ format = '[[($all_status$ahead_behind )](fg:{{ $host.warning }} bg:{{ $host.mute
 # LANGUAGES
 # ============================================================================
 [python]
-symbol = ""
-style = "bg:{{ $host.bg }}"
-format = '[[ $symbol $version ](fg:{{ $host.secondary }} bg:{{ $host.bg }})]($style)'
+disabled = true
 
 [nodejs]
 symbol = ""
