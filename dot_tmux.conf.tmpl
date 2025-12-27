@@ -1,0 +1,15 @@
+# ~/.tmux.conf
+# ============================================================================
+# Cross-platform tmux configuration managed by chezmoi
+# Host: {{ .hostLabel | default "unknown" }}
+# ============================================================================
+
+# Source modular configuration files
+source-file ~/.config/tmux/common.conf
+source-file ~/.config/tmux/status.conf
+source-file ~/.config/tmux/theme.conf
+
+# ============================================================================
+# INITIALIZE TPM (must be at the very bottom)
+# ============================================================================
+run '~/.tmux/plugins/tpm/tpm'

@@ -1,0 +1,50 @@
+# ~/.config/yazi/keymap.toml
+# ============================================================================
+# YAZI KEYBINDINGS - Shared across all machines
+# ============================================================================
+
+[manager]
+prepend_keymap = [
+    # Quick bookmarks (b prefix)
+    { on = ["b", "h"], run = "cd ~", desc = "Go to home" },
+    { on = ["b", "d"], run = "cd ~/Documents", desc = "Go to Documents" },
+    { on = ["b", "D"], run = "cd ~/Downloads", desc = "Go to Downloads" },
+    { on = ["b", "p"], run = "cd ~/Projects", desc = "Go to Projects" },
+    { on = ["b", "c"], run = "cd ~/.config", desc = "Go to config" },
+    { on = ["b", "."], run = "cd ~/dotfiles", desc = "Go to dotfiles" },
+
+    # Navigation enhancements
+    { on = ["g", "h"], run = "cd ~", desc = "Go home" },
+    { on = ["g", "/"], run = "cd /", desc = "Go to root" },
+
+    # Toggle hidden files
+    { on = ["."], run = "hidden toggle", desc = "Toggle hidden" },
+
+    # Open in editor
+    { on = ["e"], run = "open --hovered", desc = "Open hovered" },
+    { on = ["E"], run = "shell 'nvim \"$@\"' --block --confirm", desc = "Edit in nvim" },
+
+    # Shell commands
+    { on = ["!"], run = "shell --block", desc = "Shell command" },
+
+    # Sorting
+    { on = ["s", "m"], run = "sort mtime --reverse", desc = "Sort by mtime" },
+    { on = ["s", "n"], run = "sort natural", desc = "Sort by name" },
+    { on = ["s", "s"], run = "sort size --reverse", desc = "Sort by size" },
+    { on = ["s", "e"], run = "sort ext", desc = "Sort by extension" },
+]
+
+[tasks]
+prepend_keymap = []
+
+[select]
+prepend_keymap = []
+
+[input]
+prepend_keymap = []
+
+[help]
+prepend_keymap = []
+
+[completion]
+prepend_keymap = []

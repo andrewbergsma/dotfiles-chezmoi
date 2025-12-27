@@ -1,0 +1,11 @@
+# Ignore files that shouldn't be managed by chezmoi
+# or where existing configs should be preserved
+
+# Preserve existing neovim config (LazyVim)
+.config/nvim/**
+
+# Don't deploy scripts to home directory (they're for bootstrap only)
+scripts/**
+
+# Preserve README in home (if any)
+README.md

@@ -1,0 +1,86 @@
+# ~/.config/yazi/yazi.toml
+# ============================================================================
+# YAZI FILE MANAGER CONFIGURATION
+# Shared across all machines - theme colors are in theme.toml
+# ============================================================================
+
+[mgr]
+linemode = "mtime"
+sort_reverse = true
+sort_by = "mtime"
+ratio = [1, 3, 3]
+show_hidden = true
+show_symlink = true
+
+[opener]
+# Editors - nvim primary, fallback to others
+edit = [
+    { run = 'nvim "$@"', block = true },
+]
+
+nvim = [{ run = 'nvim "$@"', desc = "Edit in Neovim", block = true }]
+micro = [{ run = 'micro "$@"', desc = "Open with micro", block = true }]
+visidata = [{ run = 'visidata "$@"', desc = "Open with VisiData", block = true }]
+
+# Media
+play = [{ run = 'mpv "$@"', orphan = true, for = "unix" }]
+play_terminal = [{ run = 'mpv --no-video "$@"', block = true, for = "unix" }]
+
+[open]
+prepend_rules = [
+    { mime = "inode/directory", use = "enter_dir" },
+    # Data files - visidata first
+    { name = "*.csv", use = ["visidata", "nvim"] },
+    { name = "*.tsv", use = ["visidata", "nvim"] },
+    { name = "*.xlsx", use = ["visidata"] },
+    { name = "*.xls", use = ["visidata"] },
+    { name = "*.json", use = ["visidata", "nvim"] },
+    { name = "*.xml", use = ["nvim", "visidata"] },
+    # Config/text files - nvim first
+    { name = "*.toml", use = ["nvim", "micro"] },
+    { name = "*.yaml", use = ["nvim", "micro"] },
+    { name = "*.yml", use = ["nvim", "micro"] },
+    { name = "*.md", use = ["nvim", "micro"] },
+    { name = "*.txt", use = ["nvim", "micro"] },
+    { name = "*.conf", use = ["nvim", "micro"] },
+    { name = "*.ini", use = ["nvim", "micro"] },
+    { name = "*.env", use = ["nvim", "micro"] },
+    { name = "*.log", use = ["nvim", "micro"] },
+]
+
+rules = [
+    # Audio - terminal playback
+    { name = "*.mp3", use = ["play_terminal"] },
+    { name = "*.flac", use = ["play_terminal"] },
+    { name = "*.wav", use = ["play_terminal"] },
+    { name = "*.ogg", use = ["play_terminal"] },
+    { name = "*.m4a", use = ["play_terminal"] },
+    { name = "*.aac", use = ["play_terminal"] },
+    { name = "*.opus", use = ["play_terminal"] },
+    # Video
+    { name = "*.mp4", use = ["play"] },
+    { name = "*.mkv", use = ["play"] },
+    { name = "*.avi", use = ["play"] },
+    { name = "*.mov", use = ["play"] },
+    { name = "*.webm", use = ["play"] },
+    # Fallback
+    { name = "*.*", use = ["nvim", "micro"] },
+]
+
+[preview]
+wrap = "no"
+tab_size = 2
+max_width = 3000
+max_height = 2000
+cache_dir = ""
+
+[plugin]
+prepend_previewers = [
+    { name = "*.mp3", run = "exifaudio" },
+    { name = "*.flac", run = "exifaudio" },
+    { name = "*.wav", run = "exifaudio" },
+    { name = "*.m4a", run = "exifaudio" },
+    { name = "*.ogg", run = "exifaudio" },
+    { name = "*.opus", run = "exifaudio" },
+    { name = "*.aac", run = "exifaudio" },
+]

@@ -1,0 +1,157 @@
+# ============================================================================
+# Chezmoi Data File - Host Themes & Shared Configuration
+# ============================================================================
+# This file defines per-host color palettes and shared settings.
+# Access in templates via: {{ .hosts.studio.primary }}
+
+# Host definitions with distinct color palettes
+hosts:
+  # macOS machines
+  studio:
+    label: "studio"
+    os: "macos"
+    theme: "ocean"
+    # Ocean blue palette - calming, professional
+    primary: "#61afef"
+    secondary: "#56b6c2"
+    accent: "#98c379"
+    warning: "#e5c07b"
+    error: "#e06c75"
+    muted: "#5c6370"
+    bg: "#282c34"
+    bg_dark: "#21252b"
+    fg: "#abb2bf"
+    fg_bright: "#ffffff"
+
+  mbp:
+    label: "mbp"
+    os: "macos"
+    theme: "forest"
+    # Forest green palette - natural, earthy
+    primary: "#98c379"
+    secondary: "#56b6c2"
+    accent: "#c678dd"
+    warning: "#e5c07b"
+    error: "#e06c75"
+    muted: "#5c6370"
+    bg: "#1e2718"
+    bg_dark: "#151c12"
+    fg: "#a8b89d"
+    fg_bright: "#d4e5c7"
+
+  # Arch Linux machines
+  archdev:
+    label: "archdev"
+    os: "arch"
+    theme: "sunset"
+    # Sunset orange/red palette - warm, energetic
+    primary: "#ff7b72"
+    secondary: "#ffa657"
+    accent: "#d2a8ff"
+    warning: "#e3b341"
+    error: "#f85149"
+    muted: "#8b949e"
+    bg: "#2d1f1f"
+    bg_dark: "#1f1515"
+    fg: "#e6d5d5"
+    fg_bright: "#ffffff"
+
+  archdev101:
+    label: "archdev101"
+    os: "arch"
+    theme: "arctic"
+    # Arctic cyan/white palette - clean, crisp
+    primary: "#88c0d0"
+    secondary: "#81a1c1"
+    accent: "#b48ead"
+    warning: "#ebcb8b"
+    error: "#bf616a"
+    muted: "#4c566a"
+    bg: "#2e3440"
+    bg_dark: "#242933"
+    fg: "#d8dee9"
+    fg_bright: "#eceff4"
+
+  # Ubuntu machine
+  ubuntu103:
+    label: "ubuntu103"
+    os: "ubuntu"
+    theme: "volcanic"
+    # Volcanic purple/magenta palette - bold, distinct
+    primary: "#c678dd"
+    secondary: "#e06c75"
+    accent: "#61afef"
+    warning: "#e5c07b"
+    error: "#f44747"
+    muted: "#6b6b6b"
+    bg: "#1e1e2e"
+    bg_dark: "#181825"
+    fg: "#cdd6f4"
+    fg_bright: "#ffffff"
+
+# Default/fallback theme (used if host not recognized)
+default:
+  label: "unknown"
+  os: "linux"
+  theme: "default"
+  primary: "#89b4fa"
+  secondary: "#94e2d5"
+  accent: "#f5c2e7"
+  warning: "#f9e2af"
+  error: "#f38ba8"
+  muted: "#6c7086"
+  bg: "#1e1e2e"
+  bg_dark: "#11111b"
+  fg: "#cdd6f4"
+  fg_bright: "#ffffff"
+
+# Shared tool settings (not host-specific)
+tools:
+  editor: "nvim"
+  pager: "bat"
+  shell: "zsh"
+
+# Package lists per OS
+packages:
+  common:
+    - zsh
+    - git
+    - curl
+    - tmux
+    - neovim
+    - starship
+    - ripgrep
+    - fd
+    - fzf
+    - zoxide
+    - bat
+    - eza
+    - jq
+    - tree
+
+  macos_extra:
+    - gh
+    - yazi
+    - chafa
+    - ffmpegthumbnailer
+    - poppler
+    - imagemagick
+
+  arch_extra:
+    - github-cli
+    - yazi
+    - chafa
+    - ffmpegthumbnailer
+    - poppler
+    - imagemagick
+    - wl-clipboard
+    - xclip
+
+  ubuntu_extra:
+    - gh
+    - chafa
+    - ffmpeg
+    - poppler-utils
+    - imagemagick
+    - xclip
+    - wl-clipboard

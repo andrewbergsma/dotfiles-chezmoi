@@ -1,0 +1,36 @@
+# Chezmoi configuration - generated on first `chezmoi init`
+# This file prompts for host identity if not auto-detected
+
+{{- $hostname := .chezmoi.hostname }}
+{{- $osid := .chezmoi.os }}
+
+{{- /* Known hosts mapping - your 5 machines */ -}}
+{{- $knownHosts := dict
+    "studio" "macos"
+    "mbp" "macos"
+    "archdev" "arch"
+    "archdev101" "arch"
+    "ubuntu103" "ubuntu"
+}}
+
+{{- /* Auto-detect host label from hostname */ -}}
+{{- $hostLabel := "" }}
+{{- range $name, $os := $knownHosts }}
+    {{- if hasPrefix $name $hostname }}
+        {{- $hostLabel = $name }}
+    {{- end }}
+{{- end }}
+
+{{- /* Special case: exact matches take priority */ -}}
+{{- if hasKey $knownHosts $hostname }}
+    {{- $hostLabel = $hostname }}
+{{- end }}
+
+{{- /* If not auto-detected, prompt user */ -}}
+{{- if eq $hostLabel "" }}
+    {{- $hostLabel = promptStringOnce . "hostLabel" "Host label (studio/mbp/archdev/archdev101/ubuntu103)" }}
+{{- end }}
+
+[data]
+    hostLabel = {{ $hostLabel | quote }}
+    osType = {{ $osid | quote }}

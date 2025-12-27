@@ -1,0 +1,25 @@
+{{- /* Get host-specific theme or fall back to default */ -}}
+{{- $hostLabel := .hostLabel | default "unknown" -}}
+{{- $host := index .hosts $hostLabel | default .default -}}
+
+# ~/.config/tmux/status.conf
+# ============================================================================
+# STATUS BAR LAYOUT
+# Host: {{ $host.label }} | Theme: {{ $host.theme }}
+# ============================================================================
+
+set -g status-position bottom
+set -g status-left-length 80
+set -g status-right-length 120
+
+# Status left: Host label prominently displayed
+set -g status-left '#[fg={{ $host.bg }},bg={{ $host.primary }},bold] {{ $host.label | upper }} #[fg={{ $host.primary }},bg={{ $host.muted }}]#[fg={{ $host.fg }},bg={{ $host.muted }}] #S #[fg={{ $host.muted }},bg=default] '
+
+# Status right: Continuum indicator, user@host, time
+set -g status-right '#[fg={{ $host.muted }}]#[fg={{ $host.accent }},bg={{ $host.muted }}]#{?@continuum_save, AUTO ,}#[fg={{ $host.bg_dark }},bg={{ $host.muted }}]#[fg={{ $host.warning }},bg={{ $host.bg_dark }}] #{user}@#h #[fg={{ $host.bg }},bg={{ $host.bg_dark }}]#[fg={{ $host.fg }},bg={{ $host.bg }}] %H:%M %Y-%m-%d '
+
+# Window status separator
+setw -g window-status-separator '  '
+
+# Show pane numbers longer
+set -g display-panes-time 2000
