@@ -11,10 +11,10 @@ hosts:
     label: "studio"
     os: "macos"
     theme: "ocean"
-    # Ocean blue palette - calming, professional
+    # Ocean blue palette - monochromatic blue
     primary: "#61afef"
-    secondary: "#56b6c2"
-    accent: "#98c379"
+    secondary: "#4d8fcc"
+    accent: "#3a7cb8"
     warning: "#e5c07b"
     error: "#e06c75"
     muted: "#5c6370"
@@ -27,17 +27,17 @@ hosts:
     label: "mbp"
     os: "macos"
     theme: "forest"
-    # Forest green palette - natural, earthy
+    # Forest green palette - monochromatic green
     primary: "#98c379"
-    secondary: "#56b6c2"
-    accent: "#c678dd"
+    secondary: "#7da662"
+    accent: "#5f8a4a"
     warning: "#e5c07b"
     error: "#e06c75"
     muted: "#5c6370"
-    bg: "#1e2718"
-    bg_dark: "#151c12"
-    fg: "#a8b89d"
-    fg_bright: "#d4e5c7"
+    bg: "#282c34"
+    bg_dark: "#21252b"
+    fg: "#abb2bf"
+    fg_bright: "#ffffff"
 
   # Arch Linux machines
   archdev:
