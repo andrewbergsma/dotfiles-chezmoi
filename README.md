@@ -4,6 +4,8 @@ A unified dotfiles system for **5 machines** (1 Ubuntu, 2 Arch, 2 macOS) with vi
 
 Managed by [chezmoi](https://chezmoi.io/) — one branch, per-host theming via templates.
 
+> **Note:** This is a private repository. SSH keys must be configured on each machine.
+
 ## Visual Host Identification
 
 Each machine has a **distinct color theme** visible in:
@@ -21,31 +23,32 @@ Each machine has a **distinct color theme** visible in:
 
 ## Quick Start
 
-### 1. Bootstrap Dependencies
+### 0. Prerequisites (SSH Key)
 
-Run the appropriate install script for your OS:
-
+Ensure SSH keys are set up for GitHub on the machine:
 ```bash
-# macOS
-curl -fsSL https://raw.githubusercontent.com/andrewbergsma/dotfiles-chezmoi/main/scripts/install-macos.sh | bash
+# Test SSH access
+ssh -T git@github.com
 
-# Arch Linux
-curl -fsSL https://raw.githubusercontent.com/andrewbergsma/dotfiles-chezmoi/main/scripts/install-arch.sh | bash
-
-# Ubuntu
-curl -fsSL https://raw.githubusercontent.com/andrewbergsma/dotfiles-chezmoi/main/scripts/install-ubuntu.sh | bash
+# If not set up, generate a key and add to GitHub
+ssh-keygen -t ed25519 -C "your_email@example.com"
+cat ~/.ssh/id_ed25519.pub  # Add this to GitHub → Settings → SSH Keys
 ```
 
-Or clone and run locally:
+### 1. Clone and Bootstrap
+
 ```bash
-git clone https://github.com/andrewbergsma/dotfiles-chezmoi.git
+# Clone the repo
+git clone git@github.com:andrewbergsma/dotfiles-chezmoi.git
 cd dotfiles-chezmoi
-./scripts/install-macos.sh  # or install-arch.sh / install-ubuntu.sh
+
+# Run the appropriate install script
+./scripts/install-macos.sh    # macOS
+./scripts/install-arch.sh     # Arch Linux
+./scripts/install-ubuntu.sh   # Ubuntu
 ```
 
-### 2. Install chezmoi
-
-If not installed by the bootstrap script:
+### 2. Install chezmoi (if not installed by script)
 
 ```bash
 # macOS (Homebrew)
@@ -61,12 +64,8 @@ sh -c "$(curl -fsLS get.chezmoi.io)"
 ### 3. Initialize Dotfiles
 
 ```bash
-# One-liner: install chezmoi and apply dotfiles
-sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply andrewbergsma/dotfiles-chezmoi
-
-# Or if chezmoi is already installed:
-chezmoi init andrewbergsma/dotfiles-chezmoi
-chezmoi apply
+# Initialize and apply (SSH URL for private repo)
+chezmoi init git@github.com:andrewbergsma/dotfiles-chezmoi.git --apply
 
 # You'll be prompted for host label if not auto-detected:
 # Host label (studio/mbp/archdev/archdev101/ubuntu103): studio
@@ -94,29 +93,6 @@ exec zsh
 ### 6. Install Tmux Plugins
 
 Inside tmux, press `prefix + I` (Ctrl-b then Shift-i) to install plugins.
-
-## Private Repository
-
-This repo can be made private. Chezmoi supports private repos via SSH:
-
-```bash
-# Use SSH URL for private repos
-chezmoi init git@github.com:andrewbergsma/dotfiles-chezmoi.git
-
-# Ensure SSH keys are set up on the machine
-ssh -T git@github.com
-```
-
-**Note:** If the repo is private, the `curl | bash` install scripts won't work. Instead:
-```bash
-# Clone first, then run install script
-git clone git@github.com:andrewbergsma/dotfiles-chezmoi.git
-cd dotfiles-chezmoi
-./scripts/install-macos.sh  # or appropriate OS script
-
-# Then init chezmoi
-chezmoi init git@github.com:andrewbergsma/dotfiles-chezmoi.git --apply
-```
 
 ## Updating
 
@@ -248,7 +224,7 @@ chezmoi data | grep hostLabel
 
 # Force re-init
 rm ~/.config/chezmoi/chezmoi.toml
-chezmoi init andrewbergsma/dotfiles-chezmoi
+chezmoi init git@github.com:andrewbergsma/dotfiles-chezmoi.git
 ```
 
 ### Permission denied on scripts
@@ -261,6 +237,17 @@ chmod +x ~/.config/tmux/scripts/*.sh
 
 1. Check theme file exists: `ls ~/.config/yazi/theme.toml`
 2. Restart yazi (quit and reopen)
+
+### SSH key not working
+
+```bash
+# Check SSH agent is running
+eval "$(ssh-agent -s)"
+ssh-add ~/.ssh/id_ed25519
+
+# Verify GitHub access
+ssh -T git@github.com
+```
 
 ## Tools Included
 
