@@ -27,20 +27,20 @@ Run the appropriate install script for your OS:
 
 ```bash
 # macOS
-curl -fsSL https://raw.githubusercontent.com/YOUR_USER/dotfiles/main/scripts/install-macos.sh | bash
+curl -fsSL https://raw.githubusercontent.com/andrewbergsma/dotfiles-chezmoi/main/scripts/install-macos.sh | bash
 
 # Arch Linux
-curl -fsSL https://raw.githubusercontent.com/YOUR_USER/dotfiles/main/scripts/install-arch.sh | bash
+curl -fsSL https://raw.githubusercontent.com/andrewbergsma/dotfiles-chezmoi/main/scripts/install-arch.sh | bash
 
 # Ubuntu
-curl -fsSL https://raw.githubusercontent.com/YOUR_USER/dotfiles/main/scripts/install-ubuntu.sh | bash
+curl -fsSL https://raw.githubusercontent.com/andrewbergsma/dotfiles-chezmoi/main/scripts/install-ubuntu.sh | bash
 ```
 
 Or clone and run locally:
 ```bash
-git clone https://github.com/YOUR_USER/dotfiles.git
-cd dotfiles
-./scripts/install-$(uname -s | tr '[:upper:]' '[:lower:]').sh
+git clone https://github.com/andrewbergsma/dotfiles-chezmoi.git
+cd dotfiles-chezmoi
+./scripts/install-macos.sh  # or install-arch.sh / install-ubuntu.sh
 ```
 
 ### 2. Install chezmoi
@@ -61,8 +61,12 @@ sh -c "$(curl -fsLS get.chezmoi.io)"
 ### 3. Initialize Dotfiles
 
 ```bash
-# Initialize (first time)
-chezmoi init https://github.com/YOUR_USER/dotfiles
+# One-liner: install chezmoi and apply dotfiles
+sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply andrewbergsma/dotfiles-chezmoi
+
+# Or if chezmoi is already installed:
+chezmoi init andrewbergsma/dotfiles-chezmoi
+chezmoi apply
 
 # You'll be prompted for host label if not auto-detected:
 # Host label (studio/mbp/archdev/archdev101/ubuntu103): studio
@@ -91,6 +95,29 @@ exec zsh
 
 Inside tmux, press `prefix + I` (Ctrl-b then Shift-i) to install plugins.
 
+## Private Repository
+
+This repo can be made private. Chezmoi supports private repos via SSH:
+
+```bash
+# Use SSH URL for private repos
+chezmoi init git@github.com:andrewbergsma/dotfiles-chezmoi.git
+
+# Ensure SSH keys are set up on the machine
+ssh -T git@github.com
+```
+
+**Note:** If the repo is private, the `curl | bash` install scripts won't work. Instead:
+```bash
+# Clone first, then run install script
+git clone git@github.com:andrewbergsma/dotfiles-chezmoi.git
+cd dotfiles-chezmoi
+./scripts/install-macos.sh  # or appropriate OS script
+
+# Then init chezmoi
+chezmoi init git@github.com:andrewbergsma/dotfiles-chezmoi.git --apply
+```
+
 ## Updating
 
 ```bash
@@ -98,7 +125,9 @@ Inside tmux, press `prefix + I` (Ctrl-b then Shift-i) to install plugins.
 chezmoi update
 
 # Or manually
-chezmoi git pull
+chezmoi cd
+git pull
+exit
 chezmoi apply
 ```
 
@@ -136,7 +165,7 @@ chezmoi apply
 
 Host identity is determined in this order:
 
-1. **Auto-detection**: If hostname starts with `alpha`, `bravo`, etc.
+1. **Auto-detection**: If hostname matches `studio`, `mbp`, `archdev`, `archdev101`, or `ubuntu103`
 2. **Manual prompt**: Asked during `chezmoi init`
 3. **Manual override**: Edit `~/.config/chezmoi/chezmoi.toml`
 
@@ -148,7 +177,7 @@ chezmoi edit-config
 
 # Set hostLabel in [data] section:
 # [data]
-#     hostLabel = "delta"
+#     hostLabel = "archdev"
 
 # Re-apply
 chezmoi apply
@@ -219,7 +248,7 @@ chezmoi data | grep hostLabel
 
 # Force re-init
 rm ~/.config/chezmoi/chezmoi.toml
-chezmoi init https://github.com/YOUR_USER/dotfiles
+chezmoi init andrewbergsma/dotfiles-chezmoi
 ```
 
 ### Permission denied on scripts
