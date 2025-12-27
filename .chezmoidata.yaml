@@ -10,6 +10,7 @@ hosts:
   studio:
     label: "studio"
     os: "macos"
+    icon: ""
     theme: "ocean"
     # Ocean blue palette - monochromatic blue
     primary: "#61afef"
@@ -26,6 +27,7 @@ hosts:
   mbp:
     label: "mbp"
     os: "macos"
+    icon: ""
     theme: "forest"
     # Forest green palette - monochromatic green
     primary: "#98c379"
@@ -43,6 +45,7 @@ hosts:
   archdev:
     label: "archdev"
     os: "arch"
+    icon: ""
     theme: "crimson"
     # Crimson red palette - monochromatic red
     primary: "#e06c75"
@@ -59,6 +62,7 @@ hosts:
   archdev101:
     label: "archdev101"
     os: "arch"
+    icon: ""
     theme: "mauve"
     # Mauve palette - monochromatic purple/mauve
     primary: "#c678dd"
@@ -76,6 +80,7 @@ hosts:
   ubuntu103:
     label: "ubuntu103"
     os: "ubuntu"
+    icon: ""
     theme: "ember"
     # Ember orange palette - monochromatic orange
     primary: "#d19a66"
