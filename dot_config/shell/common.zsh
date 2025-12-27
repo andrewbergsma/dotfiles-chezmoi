@@ -87,12 +87,12 @@ alias gd='git diff'
 alias gco='git checkout'
 
 # ============================================================================
-# TMUX ALIASES
+# TMUX ALIASES (gum picker for session selection)
 # ============================================================================
-alias ta='tmux attach-session -t'
+alias ta='tmux attach-session -t $(tmux list-sessions 2>/dev/null | gum choose | cut -d: -f1)'
+alias tks='tmux kill-session -t $(tmux list-sessions 2>/dev/null | gum choose | cut -d: -f1)'
 alias tl='tmux list-sessions'
 alias tns='tmux new-session -s'
-alias tks='tmux kill-session -t'
 
 # ============================================================================
 # ZOXIDE (smart cd)
