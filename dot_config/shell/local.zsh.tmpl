@@ -126,6 +126,21 @@ alias open='xdg-open'
 {{ end -}}
 
 # ============================================================================
+# TERMINAL DETECTION & FALLBACK (Linux only)
+# ============================================================================
+{{ if ne $host.os "macos" -}}
+# Handle kitty/ghostty terminals when SSHing from macOS
+# Falls back to xterm-256color if terminfo not installed
+if [[ "$TERM" == "xterm-kitty" ]] && ! infocmp xterm-kitty &>/dev/null 2>&1; then
+    export TERM="xterm-256color"
+fi
+
+if [[ "$TERM" == "xterm-ghostty" ]] && ! infocmp xterm-ghostty &>/dev/null 2>&1; then
+    export TERM="xterm-256color"
+fi
+{{ end -}}
+
+# ============================================================================
 # HOST-SPECIFIC CUSTOM SETTINGS
 # ============================================================================
 # Add any machine-specific settings below this line
