@@ -1,0 +1,79 @@
+{{- /* Only run on Linux hosts */ -}}
+{{- $hostLabel := .hostLabel | default "unknown" -}}
+{{- $host := index .hosts $hostLabel | default .default -}}
+{{- if ne $host.os "macos" }}
+#!/usr/bin/env bash
+# ============================================================================
+# Install terminal definitions for kitty and ghostty
+# This script runs once on Linux hosts to enable proper terminal support
+# when SSHing from macOS machines running these terminals
+# ============================================================================
+
+set -euo pipefail
+
+TERMINFO_DIR="${HOME}/.terminfo"
+mkdir -p "$TERMINFO_DIR"
+
+echo "Installing terminal definitions..."
+
+# ============================================================================
+# KITTY TERMINFO
+# ============================================================================
+if ! infocmp xterm-kitty &>/dev/null 2>&1; then
+    echo "  Installing kitty terminfo..."
+
+    KITTY_TERMINFO=$(mktemp)
+    if curl -fsSL -o "$KITTY_TERMINFO" \
+        "https://raw.githubusercontent.com/kovidgoyal/kitty/master/terminfo/kitty.terminfo" 2>/dev/null; then
+        if [[ -s "$KITTY_TERMINFO" ]]; then
+            tic -x -o "$TERMINFO_DIR" "$KITTY_TERMINFO" 2>/dev/null && \
+                echo "  kitty terminfo installed" || \
+                echo "  Warning: Failed to compile kitty terminfo"
+        fi
+    else
+        echo "  Warning: Could not download kitty terminfo"
+    fi
+    rm -f "$KITTY_TERMINFO"
+else
+    echo "  kitty terminfo already installed"
+fi
+
+# ============================================================================
+# GHOSTTY TERMINFO
+# ============================================================================
+if ! infocmp xterm-ghostty &>/dev/null 2>&1; then
+    echo "  Installing ghostty terminfo..."
+
+    GHOSTTY_TERMINFO=$(mktemp)
+    if curl -fsSL -o "$GHOSTTY_TERMINFO" \
+        "https://raw.githubusercontent.com/ghostty-org/ghostty/main/src/terminfo/ghostty.terminfo" 2>/dev/null; then
+        if [[ -s "$GHOSTTY_TERMINFO" ]]; then
+            tic -x -o "$TERMINFO_DIR" "$GHOSTTY_TERMINFO" 2>/dev/null && \
+                echo "  ghostty terminfo installed" || \
+                echo "  Warning: Failed to compile ghostty terminfo"
+        fi
+    else
+        # Fallback: try alternate URL or create minimal terminfo
+        echo "  Warning: Could not download ghostty terminfo from official source"
+        echo "  Trying fallback method..."
+
+        # Create a minimal xterm-ghostty alias to xterm-256color
+        cat > "$GHOSTTY_TERMINFO" << 'EOF'
+xterm-ghostty|ghostty terminal emulator,
+    use=xterm-256color,
+EOF
+        tic -x -o "$TERMINFO_DIR" "$GHOSTTY_TERMINFO" 2>/dev/null && \
+            echo "  ghostty terminfo (fallback) installed" || \
+            echo "  Warning: Failed to install ghostty terminfo"
+    fi
+    rm -f "$GHOSTTY_TERMINFO"
+else
+    echo "  ghostty terminfo already installed"
+fi
+
+echo "Terminal definitions complete."
+{{- else }}
+#!/usr/bin/env bash
+# macOS - terminal emulators include their own terminfo
+exit 0
+{{- end }}
