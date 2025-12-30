@@ -87,10 +87,30 @@ alias gd='git diff'
 alias gco='git checkout'
 
 # ============================================================================
-# TMUX ALIASES (gum picker for session selection)
+# TMUX FUNCTIONS (gum picker for session selection)
 # ============================================================================
-alias ta='tmux attach-session -t $(tmux list-sessions 2>/dev/null | gum choose | cut -d: -f1)'
-alias tks='tmux kill-session -t $(tmux list-sessions 2>/dev/null | gum choose | cut -d: -f1)'
+ta() {
+    local sessions=$(tmux list-sessions 2>/dev/null)
+    if [[ -z "$sessions" ]]; then
+        echo "No tmux sessions running. Creating new session..."
+        tmux new-session
+    else
+        local session=$(echo "$sessions" | gum choose | cut -d: -f1)
+        [[ -n "$session" ]] && tmux attach-session -t "$session"
+    fi
+}
+
+tks() {
+    local sessions=$(tmux list-sessions 2>/dev/null)
+    if [[ -z "$sessions" ]]; then
+        echo "No tmux sessions to kill."
+        return 1
+    else
+        local session=$(echo "$sessions" | gum choose | cut -d: -f1)
+        [[ -n "$session" ]] && tmux kill-session -t "$session"
+    fi
+}
+
 alias tl='tmux list-sessions'
 alias tns='tmux new-session -s'
 
