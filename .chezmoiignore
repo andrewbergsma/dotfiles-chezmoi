@@ -9,3 +9,6 @@ scripts/**
 
 # Preserve README in home (if any)
 README.md
+
+# Don't manage manually maintained secrets file (Linux only)
+.config/shell/secrets.env

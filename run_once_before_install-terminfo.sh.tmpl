@@ -1,8 +1,8 @@
+#!/usr/bin/env bash
 {{- /* Only run on Linux hosts */ -}}
 {{- $hostLabel := .hostLabel | default "unknown" -}}
 {{- $host := index .hosts $hostLabel | default .default -}}
 {{- if ne $host.os "macos" }}
-#!/usr/bin/env bash
 # ============================================================================
 # Install terminal definitions for kitty and ghostty
 # This script runs once on Linux hosts to enable proper terminal support
@@ -72,8 +72,7 @@ else
 fi
 
 echo "Terminal definitions complete."
-{{- else }}
-#!/usr/bin/env bash
+{{- else -}}
 # macOS - terminal emulators include their own terminfo
 exit 0
-{{- end }}
+{{- end -}}
