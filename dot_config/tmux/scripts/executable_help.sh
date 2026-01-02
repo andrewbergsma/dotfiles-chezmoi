@@ -10,18 +10,19 @@ cat << 'EOF'
 │ M-\        Split horizontal             │ |          Split horizontal             │
 │ M--        Split vertical               │ -          Split vertical               │
 │ M-z        Zoom pane                    │ z          Zoom pane                    │
+│ M-x        Kill pane (confirm)          │ x          Kill pane (confirm)          │
 │                                         │ =          Even horizontal layout       │
 │ WINDOWS                                 │ +          Even vertical layout         │
-│ M-1..9     Jump to window 1-9           │ x          Kill pane (confirm)          │
-│ M-h        Previous window              │ X          Kill window (confirm)        │
-│ M-l        Next window                  │ i          Display pane numbers         │
-│ M-c        New window                   │ I          Display session info         │
+│ M-1..9     Jump to window 1-9           │ X          Kill window (confirm)        │
+│ M-h        Previous window              │ i          Display pane numbers         │
+│ M-l        Next window                  │ I          Display session info         │
+│ M-c        New window                   │                                         │
 │                                         │                                         │
 │ SESSIONS                                │ WINDOWS (cont)                          │
 │ M-s        Choose session               │ c          New window                   │
 │ M-↑        Previous session             │ n          Next window                  │
 │ M-↓        Next session                 │ p          Previous window              │
-│                                         │ 0-9        Select window 0-9            │
+│ M-X        Kill window (confirm)        │ 0-9        Select window 0-9            │
 │ COPY MODE                               │                                         │
 │ M-[        Enter copy mode              │ SESSIONS                                │
 │ M-Esc      Enter copy mode (alt)        │ S          Choose session               │
