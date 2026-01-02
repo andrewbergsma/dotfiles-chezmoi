@@ -19,7 +19,7 @@ set -g status-left '#[fg={{ $host.bg }},bg={{ $host.primary }},bold] {{ $host.la
 {{ if eq $host.os "macos" -}}
 set -g status-right '#[fg={{ $host.muted }}]#[fg={{ $host.accent }},bg={{ $host.muted }}]#{?@continuum_save, AUTO ,}#[fg={{ $host.bg_dark }},bg={{ $host.muted }}]#[fg={{ $host.secondary }},bg={{ $host.bg_dark }}] #(ipconfig getifaddr en0 || echo "no ip") #[fg={{ $host.bg }},bg={{ $host.bg_dark }}]#[fg={{ $host.warning }},bg={{ $host.bg }}] #{user}@#h #[fg={{ $host.muted }},bg={{ $host.bg }}]#[fg={{ $host.fg }},bg={{ $host.muted }}] %H:%M %Y-%m-%d '
 {{ else -}}
-set -g status-right '#[fg={{ $host.muted }}]#[fg={{ $host.accent }},bg={{ $host.muted }}]#{?@continuum_save, AUTO ,}#[fg={{ $host.bg_dark }},bg={{ $host.muted }}]#[fg={{ $host.secondary }},bg={{ $host.bg_dark }}] #(hostname -I | cut -d" " -f1) #[fg={{ $host.bg }},bg={{ $host.bg_dark }}]#[fg={{ $host.warning }},bg={{ $host.bg }}] #{user}@#h #[fg={{ $host.muted }},bg={{ $host.bg }}]#[fg={{ $host.fg }},bg={{ $host.muted }}] %H:%M %Y-%m-%d '
+set -g status-right '#[fg={{ $host.muted }}]#[fg={{ $host.accent }},bg={{ $host.muted }}]#{?@continuum_save, AUTO ,}#[fg={{ $host.bg_dark }},bg={{ $host.muted }}]#[fg={{ $host.secondary }},bg={{ $host.bg_dark }}] #(ip route get 1.1.1.1 2>/dev/null | awk "{print \$7}" | head -1 || echo "no ip") #[fg={{ $host.bg }},bg={{ $host.bg_dark }}]#[fg={{ $host.warning }},bg={{ $host.bg }}] #{user}@#h #[fg={{ $host.muted }},bg={{ $host.bg }}]#[fg={{ $host.fg }},bg={{ $host.muted }}] %H:%M %Y-%m-%d '
 {{ end -}}
 
 # Window status separator
