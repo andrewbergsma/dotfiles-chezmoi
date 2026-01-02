@@ -38,7 +38,7 @@ hosts:
     muted: "#5c6370"
     bg: "#282c34"
     bg_dark: "#222436"
-    fg: "#abb2bf"
+    fg: "#c8ccd4"
     fg_bright: "#ffffff"
 
   # Arch Linux machines
