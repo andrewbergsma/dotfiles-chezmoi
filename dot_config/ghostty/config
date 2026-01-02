@@ -35,7 +35,9 @@ font-thicken = true
 adjust-cell-height = -10%
 
 # Keybinds
-keybind = shift+enter=text:\n
+# Send Shift+Enter as CSI u sequence (ESC [ 13 ; 2 u) for tmux extended-keys
+# This prevents it from being interpreted as C-j (newline/pane navigation)
+keybind = shift+enter=csi:13;2u
 
 # Pass Alt+Arrow keys through to tmux (unbind default word navigation)
 keybind = alt+left=unbind
@@ -48,5 +50,5 @@ macos-titlebar-style = tabs
 macos-window-buttons = hidden
 
 # Config reload test - change this value to verify config is loading
-window-padding-x = 30
-window-padding-y = 30
+window-padding-x = 0
+window-padding-y = 0
