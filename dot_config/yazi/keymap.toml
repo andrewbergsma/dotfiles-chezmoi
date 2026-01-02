@@ -3,7 +3,7 @@
 # YAZI KEYBINDINGS - Shared across all machines
 # ============================================================================
 
-[manager]
+[mgr]
 prepend_keymap = [
     # Quick bookmarks (b prefix)
     { on = ["b", "h"], run = "cd ~", desc = "Go to home" },
