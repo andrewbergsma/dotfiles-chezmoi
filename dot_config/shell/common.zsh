@@ -70,15 +70,35 @@ alias ....='cd ../../..'
 # LS ALIASES (using eza if available)
 # ============================================================================
 if command -v eza &> /dev/null; then
-    alias l="eza -la --icons --group-directories-first"
-    alias ll="eza -G"
-    alias ls="eza --long"
-    alias lsr="eza -labghHSi --header --icons --git --time-style=long-iso"
-    alias lt="eza --tree --level=2 --icons"
+    # Basic listings
+    alias ls='eza --group-directories-first --color=auto'
+    alias l='eza -lah --time-style=long-iso --header --group --group-directories-first --color=auto'
+    alias ll='eza -lah --header --group --group-directories-first --color=auto'
+    alias la='eza -a --group-directories-first --color=auto'
+    alias l1='eza -1 --group-directories-first --color=auto'
+
+    # Sorted views
+    alias lt='eza -lah --sort=modified --reverse --header --group --group-directories-first --color=auto'
+    alias ltn='eza -lah --sort=modified --header --group --group-directories-first --color=auto'
+    alias lS='eza -lah --sort=size --header --group --group-directories-first --color=auto'
+    alias lx='eza -lah --sort=extension --header --group --group-directories-first --color=auto'
+
+    # Special views
+    alias lg='eza -lah --git --icons --header --group --group-directories-first --color=auto'
+    alias lsd='eza -a --only-dirs --group-directories-first --color=auto'
+    alias lsf='eza -a --only-files --group-directories-first --color=auto'
+
+    # Tree views
+    alias tree='eza --tree --group-directories-first --color=auto'
+    alias tree2='eza --tree --level=2 --group-directories-first --color=auto'
+    alias tree3='eza --tree --level=3 --group-directories-first --color=auto'
+    alias treea='eza --tree -a --group-directories-first --color=auto'
 else
-    alias l="ls -la"
-    alias ll="ls -G"
-    alias ls="ls -l"
+    # Fallback to standard ls
+    alias l="ls -lah"
+    alias ll="ls -lh"
+    alias la="ls -a"
+    alias ls="ls --color=auto"
 fi
 
 # ============================================================================
@@ -167,6 +187,7 @@ fi
 # ============================================================================
 if command -v bat &> /dev/null; then
     alias cat='bat --paging=never'
+    alias catp='bat'  # cat with paging
     export MANPAGER="sh -c 'col -bx | bat -l man -p'"
 fi
 
