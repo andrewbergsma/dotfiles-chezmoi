@@ -13,15 +13,15 @@ hosts:
     icon: ""
     theme: "ocean"
     # Ocean blue palette - monochromatic blue
-    primary: "#61afef"
+    primary: "#569edf"
     secondary: "#4d8fcc"
     accent: "#3a7cb8"
     warning: "#e5c07b"
     error: "#e06c75"
     muted: "#5c6370"
     bg: "#282c34"
-    bg_dark: "#21252b"
-    fg: "#abb2bf"
+    bg_dark: "#222436"
+    fg: "#c8ccd4"
     fg_bright: "#ffffff"
 
   mbp:
@@ -37,7 +37,7 @@ hosts:
     error: "#e06c75"
     muted: "#5c6370"
     bg: "#282c34"
-    bg_dark: "#21252b"
+    bg_dark: "#222436"
     fg: "#abb2bf"
     fg_bright: "#ffffff"
 

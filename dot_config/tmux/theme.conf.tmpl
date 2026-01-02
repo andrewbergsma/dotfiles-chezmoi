@@ -18,9 +18,13 @@ setw -g window-status-format '#[fg={{ $host.muted }}]#I:#W#F'
 # Window status (active) - uses host primary color
 setw -g window-status-current-format '#[fg={{ $host.primary }},bold]#I:#W#F'
 
-# Pane borders
+# Pane borders - Active pane gets bright primary color
 set -g pane-border-style 'fg={{ $host.muted }}'
-set -g pane-active-border-style 'fg={{ $host.primary }}'
+set -g pane-active-border-style 'fg={{ $host.primary }},bold'
+
+# Pane styling - Dim unfocused panes with darker background (affects all content)
+set -g window-style 'bg=#1a1d2a'
+set -g window-active-style 'bg={{ $host.bg_dark }}'
 
 # Message styling
 set -g message-style 'fg={{ $host.fg_bright }} bg={{ $host.bg }} bold'

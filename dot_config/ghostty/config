@@ -1,7 +1,31 @@
 # Ghostty Configuration
 # https://ghostty.org/docs/config
 
-theme = Catppuccin Macchiato
+# Studio Ocean Theme (from .chezmoidata.yaml)
+background = #222436
+foreground = #c8ccd4
+cursor-color = #569edf
+selection-background = #3a7cb8
+selection-foreground = #ffffff
+
+# ANSI Colors (0-7: normal, 8-15: bright)
+palette = 0=#222436
+palette = 1=#e06c75
+palette = 2=#98c379
+palette = 3=#e5c07b
+palette = 4=#569edf
+palette = 5=#c678dd
+palette = 6=#56b6c2
+palette = 7=#c8ccd4
+palette = 8=#5c6370
+palette = 9=#e06c75
+palette = 10=#98c379
+palette = 11=#e5c07b
+palette = 12=#569edf
+palette = 13=#c678dd
+palette = 14=#56b6c2
+palette = 15=#ffffff
+
 macos-option-as-alt = true
 
 # Font
