@@ -1,0 +1,28 @@
+# Ghostty Configuration
+# https://ghostty.org/docs/config
+
+theme = Catppuccin Macchiato
+macos-option-as-alt = true
+
+# Font
+font-family = MesloLGS Nerd Font Mono
+font-size = 14
+font-thicken = true
+adjust-cell-height = -10%
+
+# Keybinds
+keybind = shift+enter=text:\n
+
+# Pass Alt+Arrow keys through to tmux (unbind default word navigation)
+keybind = alt+left=unbind
+keybind = alt+right=unbind
+keybind = alt+up=unbind
+keybind = alt+down=unbind
+
+# macOS - minimal tabs titlebar
+macos-titlebar-style = tabs
+macos-window-buttons = hidden
+
+# Config reload test - change this value to verify config is loading
+window-padding-x = 30
+window-padding-y = 30

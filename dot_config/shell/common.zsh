@@ -37,6 +37,23 @@ setopt CORRECT
 setopt NO_BEEP
 
 # ============================================================================
+# KEYBINDINGS
+# ============================================================================
+# Swap Cmd and Ctrl arrow key behaviors:
+# - Cmd+Left/Right = word movement (was beginning/end of line)
+# - Ctrl+Left/Right = beginning/end of line (was word movement)
+
+# Cmd+Left/Right → word movement
+bindkey "^[^[[D" backward-word      # Cmd+Left (Option+Left escape sequence)
+bindkey "^[^[[C" forward-word       # Cmd+Right (Option+Right escape sequence)
+bindkey "^[[1;9D" backward-word     # Cmd+Left (alternative sequence)
+bindkey "^[[1;9C" forward-word      # Cmd+Right (alternative sequence)
+
+# Ctrl+Left/Right → beginning/end of line
+bindkey "^[[1;5D" beginning-of-line # Ctrl+Left
+bindkey "^[[1;5C" end-of-line       # Ctrl+Right
+
+# ============================================================================
 # EDITOR
 # ============================================================================
 export EDITOR="nvim"
