@@ -25,7 +25,7 @@ cat << 'EOF'
 │                                         │                                         │
 │ SESSIONS                                │ SESSIONS                                │
 │ M-s        Choose session               │ S          Choose session               │
-│ M-↑ / M-↓  Switch sessions              │ d          Detach from session          │
+│ M-k / M-j  Switch sessions (vim)        │ d          Detach from session          │
 │                                         │ Q          Kill session (confirm)       │
 │                                         │ $          Rename session               │
 │                                         │                                         │
