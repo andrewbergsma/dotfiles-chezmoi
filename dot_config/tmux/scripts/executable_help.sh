@@ -35,6 +35,9 @@ cat << 'EOF'
 │                                         │ C-v        Rectangle selection          │
 │                                         │ y          Copy & exit                  │
 │                                         │ Esc        Cancel                       │
+│                                         │ M-y/e      Scroll up/down (line)        │
+│                                         │ M-u/d      Scroll up/down (half page)   │
+│                                         │ M-b/f      Scroll up/down (full page)   │
 │                                         │                                         │
 │ PLUGINS                                 │ UTILITIES                               │
 │ C-f        FZF launcher (prefix-free)   │ r          Reload config                │
