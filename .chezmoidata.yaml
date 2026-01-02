@@ -55,8 +55,8 @@ hosts:
     error: "#ff6b6b"
     muted: "#5c6370"
     bg: "#282c34"
-    bg_dark: "#21252b"
-    fg: "#abb2bf"
+    bg_dark: "#222436"
+    fg: "#c8ccd4"
     fg_bright: "#ffffff"
 
   archdev101:
@@ -72,8 +72,8 @@ hosts:
     error: "#e06c75"
     muted: "#5c6370"
     bg: "#282c34"
-    bg_dark: "#21252b"
-    fg: "#abb2bf"
+    bg_dark: "#222436"
+    fg: "#c8ccd4"
     fg_bright: "#ffffff"
 
   # Ubuntu machine
@@ -90,8 +90,8 @@ hosts:
     error: "#e06c75"
     muted: "#5c6370"
     bg: "#282c34"
-    bg_dark: "#21252b"
-    fg: "#abb2bf"
+    bg_dark: "#222436"
+    fg: "#c8ccd4"
     fg_bright: "#ffffff"
 
 # Default/fallback theme (used if host not recognized)
