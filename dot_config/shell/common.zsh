@@ -75,6 +75,11 @@ alias pip='pip3'
 alias rp="realpath"
 alias ts='date +%Y%m%d%H%M'
 
+# macOS-only: attach-file.sh for creating Mail messages with attachments
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    alias attach-file='~/.config/scripts/attach-file.sh'
+fi
+
 # ============================================================================
 # GIT ALIASES
 # ============================================================================
@@ -155,6 +160,40 @@ if command -v atuin &> /dev/null; then
     eval "$(atuin init zsh --disable-up-arrow)"
     export ATUIN_STYLE="compact"
     export ATUIN_INLINE_HEIGHT=12
+fi
+
+# ============================================================================
+# CLAUDE-CODE-LOG (Claude Code transcript viewer)
+# ============================================================================
+if command -v claude-code-log &> /dev/null; then
+    # Basic alias
+    alias ccl='claude-code-log'
+
+    # Launch TUI for all projects
+    alias ccl-tui='claude-code-log --tui'
+
+    # View today's transcripts
+    alias ccl-today='claude-code-log --from-date today --open-browser'
+
+    # View this week's transcripts
+    alias ccl-week='claude-code-log --from-date "last week" --open-browser'
+
+    # Open current project in TUI (matches current working directory)
+    alias ccl-here='claude-code-log "$(pwd)" --tui'
+
+    # Function to quickly view and open specific date range
+    ccl-range() {
+        if [[ $# -lt 1 ]]; then
+            echo "Usage: ccl-range <from-date> [to-date]"
+            echo "Examples:"
+            echo "  ccl-range yesterday"
+            echo "  ccl-range '3 days ago' today"
+            return 1
+        fi
+        local from_date="$1"
+        local to_date="${2:-today}"
+        claude-code-log --from-date "$from_date" --to-date "$to_date" --open-browser
+    }
 fi
 
 # ============================================================================

@@ -175,6 +175,34 @@ install_nerd_font "FiraCode"
 fc-cache -fv
 
 # ============================================================================
+# UV (Python Package Manager)
+# ============================================================================
+echo ""
+echo "Installing uv (Python package manager)..."
+
+if command -v uv &> /dev/null; then
+    echo "  ✓ uv already installed"
+else
+    curl -LsSf https://astral.sh/uv/install.sh | sh
+    # Add uv to PATH for this session
+    export PATH="$HOME/.local/bin:$PATH"
+    echo "  ✓ uv installed"
+fi
+
+# ============================================================================
+# CLAUDE-CODE-LOG (Claude Code transcript viewer)
+# ============================================================================
+echo ""
+echo "Installing claude-code-log..."
+
+if command -v claude-code-log &> /dev/null; then
+    echo "  ✓ claude-code-log already installed"
+else
+    uv tool install claude-code-log
+    echo "  ✓ claude-code-log installed"
+fi
+
+# ============================================================================
 # TPM (Tmux Plugin Manager)
 # ============================================================================
 echo ""

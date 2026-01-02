@@ -204,6 +204,7 @@ chezmoi merge <file>    # Manually merge conflicts
 - **zsh** - Shell (aliases, functions, completions)
 - **kitty** - Terminal emulator (font, colors)
 - **nvim** - Editor (ignored, user manages separately)
+- **claude-code-log** - Claude Code transcript viewer (converts JSONL to HTML)
 
 ---
 
@@ -218,4 +219,80 @@ chezmoi data            # Show template data
 chezmoi edit <file>     # Edit a managed file
 chezmoi add <file>      # Add a new file to chezmoi
 chezmoi forget <file>   # Stop managing a file
+```
+
+---
+
+## Claude Code Log
+
+The `claude-code-log` tool is installed via the bootstrap scripts and provides a way to view and analyze Claude Code conversation transcripts.
+
+### Quick Start
+
+```bash
+# Launch interactive TUI to browse all projects
+ccl-tui
+
+# View today's conversations in browser
+ccl-today
+
+# View this week's conversations
+ccl-week
+
+# Open current project in TUI
+ccl-here
+
+# View custom date range
+ccl-range yesterday
+ccl-range "3 days ago" today
+```
+
+### Available Aliases
+
+All aliases are defined in `.config/shell/common.zsh`:
+
+- **ccl** - Shorthand for `claude-code-log`
+- **ccl-tui** - Launch TUI for all projects
+- **ccl-today** - View today's transcripts in browser
+- **ccl-week** - View last week's transcripts in browser
+- **ccl-here** - Open TUI for current working directory
+- **ccl-range** - View custom date range (function)
+
+### Common Usage
+
+```bash
+# Process all Claude Code projects (creates index.html)
+ccl --open-browser
+
+# Launch TUI to browse sessions interactively
+ccl --tui
+
+# View specific project
+ccl /path/to/project --tui
+
+# Filter by date range
+ccl --from-date "yesterday" --to-date "today"
+
+# Generate HTML without individual session files
+ccl --no-individual-sessions
+```
+
+### Output Location
+
+By default, claude-code-log generates files in:
+- `~/.claude/projects/index.html` - Master index
+- `~/.claude/projects/project-name/combined_transcripts.html` - Combined project transcripts
+- `~/.claude/projects/project-name/session-{id}.html` - Individual sessions
+
+### Development
+
+The source code is located at `~/GitHub/claude-code-log` and uses:
+- Python 3.10+ with uv package management
+- Textual for the TUI
+- Click for CLI interface
+
+To update the tool:
+```bash
+cd ~/GitHub/claude-code-log
+uv tool install --force .
 ```
