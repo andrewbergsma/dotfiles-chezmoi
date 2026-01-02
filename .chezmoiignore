@@ -4,8 +4,10 @@
 # Preserve existing neovim config (LazyVim)
 .config/nvim/**
 
-# Don't deploy scripts to home directory (they're for bootstrap only)
+# Don't deploy bootstrap scripts to home directory
 scripts/**
+
+# BUT do manage .config/scripts (user scripts)
 
 # Preserve README in home (if any)
 README.md

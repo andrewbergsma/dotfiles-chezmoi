@@ -1,0 +1,448 @@
+#!/bin/bash
+
+# Advanced FZF file search with multiple file type support and location filtering
+# Allows toggling between different file types and locations
+
+{{- $hostLabel := .hostLabel | default "unknown" -}}
+{{- $host := index .hosts $hostLabel | default .default -}}
+
+INDEX_DIR="$HOME/.cache/file-index"
+CURRENT_MODE="all"
+CURRENT_LOCATION="all"
+TEMP_SELECTION="/tmp/fzf_files_mode.tmp"
+TEMP_LOCATION="/tmp/fzf_files_location.tmp"
+SCRIPT_PATH="$(realpath "$0")"
+
+{{- if eq $host.os "macos" }}
+# macOS clipboard and file commands
+CLIPBOARD_CMD="pbcopy"
+OPEN_CMD="open"
+STAT_CMD="stat -f"
+STAT_FORMAT="%m %N"
+{{- else }}
+# Linux clipboard and file commands
+if command -v wl-copy &>/dev/null; then
+    CLIPBOARD_CMD="wl-copy"
+elif command -v xclip &>/dev/null; then
+    CLIPBOARD_CMD="xclip -selection clipboard"
+else
+    CLIPBOARD_CMD="cat"  # Fallback, no clipboard
+fi
+OPEN_CMD="xdg-open"
+STAT_CMD="stat --format"
+STAT_FORMAT="%Y %n"
+{{- end }}
+
+# Initialize mode from temp file if it exists
+if [[ -f "$TEMP_SELECTION" ]]; then
+    CURRENT_MODE=$(cat "$TEMP_SELECTION")
+fi
+
+# Initialize location from temp file if it exists
+if [[ -f "$TEMP_LOCATION" ]]; then
+    CURRENT_LOCATION=$(cat "$TEMP_LOCATION")
+fi
+
+# Function to get location info
+get_location_info() {
+    local location=$1
+    case $location in
+        all)       echo "~:All Locations" ;;
+        downloads) echo "~/Downloads:Downloads" ;;
+        exports)   echo "~/.local/share/p6eppm_mcp/exports:P6 Exports" ;;
+        projects)  echo "~/Projects:Projects" ;;
+        temp)      echo "~/temp:Temp" ;;
+        github)    echo "~/GitHub:GitHub" ;;
+        onedrive)  echo "~/Documents/OnedriveCBA:OneDrive" ;;
+        obsidian)  echo "~/Documents/Obsidian:Obsidian" ;;
+        scans)     echo "~/Documents/Scans:Scans" ;;
+        info)      echo "~/Documents/Info:Info" ;;
+        raycast)   echo "~/Documents/scripts/raycast:Raycast" ;;
+        music)     echo "~/Downloads/Music/Andy:Music" ;;
+        zsh)       echo "~/.config/zsh:Zsh Config" ;;
+        config)    echo "~/.config:Config" ;;
+        home)      echo "~:Home" ;;
+        documents) echo "~/Documents:Documents" ;;
+        *)         echo "~:Unknown" ;;
+    esac
+}
+
+# Function to get location by key
+get_location_by_key() {
+    local key=$1
+    case $key in
+        a) echo "all" ;;
+        d) echo "downloads" ;;
+        e) echo "exports" ;;
+        p) echo "projects" ;;
+        t) echo "temp" ;;
+        g) echo "github" ;;
+        o) echo "onedrive" ;;
+        n) echo "obsidian" ;;
+        s) echo "scans" ;;
+        i) echo "info" ;;
+        r) echo "raycast" ;;
+        m) echo "music" ;;
+        z) echo "zsh" ;;
+        c) echo "config" ;;
+        h) echo "home" ;;
+        D) echo "documents" ;;
+        *) echo "" ;;
+    esac
+}
+
+# Function to get location path
+get_location_path() {
+    local location=$1
+    local loc_info=$(get_location_info "$location")
+    echo "${loc_info%%:*}" | sed "s|~|$HOME|"
+}
+
+# Function to get location name
+get_location_name() {
+    local location=$1
+    local loc_info=$(get_location_info "$location")
+    echo "${loc_info#*:}"
+}
+
+# Function to show help page
+show_help_page() {
+    clear
+    cat << 'EOF'
+╔════════════════════════════════════════════════════════════════════════════╗
+║                         FZF FILES - KEYBOARD SHORTCUTS                      ║
+╚════════════════════════════════════════════════════════════════════════════╝
+
+LOCATION SHORTCUTS (Alt + Number)
+──────────────────────────────────
+  Alt-1   All Locations         Alt-5   Obsidian Notes
+  Alt-2   GitHub                Alt-6   Config Directory
+  Alt-3   Downloads             Alt-7   Projects
+  Alt-4   Documents             Alt-8   Zsh Config
+
+FILE TYPE SHORTCUTS (Alt + Letter)
+───────────────────────────────────
+  Alt-A   All Files             Alt-Y   YAML Files
+  Alt-X   XML Files             Alt-T   Text Files
+  Alt-M   Markdown Files        Alt-S   Python Files
+  Alt-E   Excel Files           Alt-K   JavaScript/TypeScript
+  Alt-P   PDF Files
+  Alt-J   JSON Files
+
+ACTION SHORTCUTS
+────────────────
+  Ctrl-O  Open file with system default
+  Ctrl-C  Copy file path to clipboard
+  Ctrl-I  Show detailed file information
+  Ctrl-/  Toggle preview window on/off
+  Ctrl-R  Force refresh (live search)
+
+  Enter   Select file for action menu
+  Esc     Exit without selection
+  Tab     Toggle selection (multi-select)
+
+NAVIGATION
+──────────
+  ↑/↓     Move up/down
+  PgUp    Page up
+  PgDn    Page down
+  Home    Go to first item
+  End     Go to last item
+
+Press any key to return...
+EOF
+    read -n 1 -s
+}
+
+# Function to get the appropriate index file and search parameters
+get_search_params() {
+    local mode=$1
+    case $mode in
+        xml)
+            echo "xml-index.txt:-e xml:XML Files"
+            ;;
+        md)
+            echo "md-index.txt:-e md -e markdown:Markdown Files"
+            ;;
+        xlsx)
+            echo "xlsx-index.txt:-e xlsx -e xls:Excel Files"
+            ;;
+        pdf)
+            echo "pdf-index.txt:-e pdf:PDF Files"
+            ;;
+        json)
+            echo "json-index.txt:-e json:JSON Files"
+            ;;
+        yaml)
+            echo "yaml-index.txt:-e yaml -e yml:YAML Files"
+            ;;
+        txt)
+            echo "txt-index.txt:-e txt:Text Files"
+            ;;
+        py)
+            echo "py-index.txt:-e py:Python Files"
+            ;;
+        js)
+            echo "js-index.txt:-e js -e jsx -e ts -e tsx:JavaScript/TypeScript Files"
+            ;;
+        all)
+            echo "all-files-index.txt::All Files"
+            ;;
+        *)
+            echo "all-files-index.txt::All Files"
+            ;;
+    esac
+}
+
+# Function to create live search command with location support
+create_live_search() {
+    local mode=$1
+    local location=${2:-$CURRENT_LOCATION}
+    local params=$(get_search_params "$mode")
+    local extensions=$(echo "$params" | cut -d: -f2)
+    local search_path=$(get_location_path "$location")
+
+    if [[ "$mode" == "all" ]]; then
+        echo "fd . \"$search_path\" --type f --hidden --exclude .git --exclude node_modules --exclude .cache --exclude Library/Caches --exclude .Trash -x $STAT_CMD \"$STAT_FORMAT\" {} \; 2>/dev/null | sort -rn | awk '{print \$2}' | head -1000"
+    else
+        echo "fd $extensions . \"$search_path\" --type f --hidden --exclude .git --exclude node_modules --exclude .cache --exclude Library/Caches --exclude .Trash -x $STAT_CMD \"$STAT_FORMAT\" {} \; 2>/dev/null | sort -rn | awk '{print \$2}' | head -1000"
+    fi
+}
+
+# Function to get preview command based on file type
+get_preview_cmd() {
+    echo 'file={};
+    ext="${file##*.}";
+    case "$ext" in
+        md|markdown)
+            glow {} 2>/dev/null || head -100 {}
+            ;;
+        json)
+            jq . {} 2>/dev/null || cat {}
+            ;;
+        yaml|yml)
+            yq eval . {} 2>/dev/null || cat {}
+            ;;
+        xml)
+            xmllint --format {} 2>/dev/null | head -100 || head -100 {}
+            ;;
+        pdf)
+            echo "PDF File: {}"; echo ""; pdfinfo {} 2>/dev/null || file {}
+            ;;
+        xlsx|xls)
+            echo "Excel File: {}"; echo ""; file {}; echo ""; echo "Size: $(du -h {} | cut -f1)"
+            ;;
+        py|js|jsx|ts|tsx|sh|bash)
+            bat --style=numbers --color=always {} 2>/dev/null || head -100 {}
+            ;;
+        *)
+            head -100 {} 2>/dev/null || cat {}
+            ;;
+    esac'
+}
+
+# Function to output file list for a given mode and location
+output_file_list() {
+    local mode=$1
+    local location=${2:-$CURRENT_LOCATION}
+    local params=$(get_search_params "$mode")
+    local index_file=$(echo "$params" | cut -d: -f1)
+    local file_type=$(echo "$params" | cut -d: -f3)
+
+    # Add location prefix to index file if not "all"
+    if [[ "$location" != "all" ]]; then
+        index_file="${location}-${index_file}"
+    fi
+
+    local full_index_path="$INDEX_DIR/$index_file"
+
+    # Save current mode and location
+    echo "$mode" > "$TEMP_SELECTION"
+    echo "$location" > "$TEMP_LOCATION"
+
+    # Check if index exists - use it regardless of age for performance
+    if [[ -f "$full_index_path" ]]; then
+        # Use cached index, filter by location path if needed
+        if [[ "$location" != "all" ]]; then
+            local loc_path=$(get_location_path "$location")
+            awk '{$1=""; print substr($0,2)}' "$full_index_path" | grep "^$loc_path"
+        else
+            awk '{$1=""; print substr($0,2)}' "$full_index_path"
+        fi
+    else
+        # Live search with location filter
+        eval "$(create_live_search "$mode" "$location")"
+    fi
+}
+
+# Function to search files interactively with location support
+search_files() {
+    local mode=${1:-$CURRENT_MODE}
+    local location=${2:-$CURRENT_LOCATION}
+    local params=$(get_search_params "$mode")
+    local file_type=$(echo "$params" | cut -d: -f3)
+    local location_name=$(get_location_name "$location")
+
+    # Build a clean, minimal header
+    local header="$file_type @ $location_name  |  Press ? for help"
+
+    # Export the script path for fzf reload commands
+    export FZF_SCRIPT_PATH="$SCRIPT_PATH"
+
+    # Output the initial file list and pipe to fzf
+    output_file_list "$mode" "$location" | \
+    fzf --preview "$(get_preview_cmd)" \
+        --preview-window 'right:25%' \
+        --header "$header" \
+        --bind "?:execute(${FZF_SCRIPT_PATH} --show-help < /dev/tty > /dev/tty 2>&1)" \
+        --bind "alt-1:reload(${FZF_SCRIPT_PATH} --list ${mode} all)+change-header($file_type @ All Locations  |  Press ? for help)" \
+        --bind "alt-2:reload(${FZF_SCRIPT_PATH} --list ${mode} github)+change-header($file_type @ GitHub  |  Press ? for help)" \
+        --bind "alt-3:reload(${FZF_SCRIPT_PATH} --list ${mode} downloads)+change-header($file_type @ Downloads  |  Press ? for help)" \
+        --bind "alt-4:reload(${FZF_SCRIPT_PATH} --list ${mode} documents)+change-header($file_type @ Documents  |  Press ? for help)" \
+        --bind "alt-5:reload(${FZF_SCRIPT_PATH} --list ${mode} obsidian)+change-header($file_type @ Obsidian  |  Press ? for help)" \
+        --bind "alt-6:reload(${FZF_SCRIPT_PATH} --list ${mode} config)+change-header($file_type @ Config  |  Press ? for help)" \
+        --bind "alt-7:reload(${FZF_SCRIPT_PATH} --list ${mode} projects)+change-header($file_type @ Projects  |  Press ? for help)" \
+        --bind "alt-8:reload(${FZF_SCRIPT_PATH} --list ${mode} zsh)+change-header($file_type @ Zsh Config  |  Press ? for help)" \
+        --bind "alt-a:reload(${FZF_SCRIPT_PATH} --list all \$(cat $TEMP_LOCATION 2>/dev/null || echo all))+change-header(All Files @ \$(${FZF_SCRIPT_PATH} --get-location-name \$(cat $TEMP_LOCATION 2>/dev/null || echo all))  |  Press ? for help)" \
+        --bind "alt-x:reload(${FZF_SCRIPT_PATH} --list xml \$(cat $TEMP_LOCATION 2>/dev/null || echo all))+change-header(XML Files @ \$(${FZF_SCRIPT_PATH} --get-location-name \$(cat $TEMP_LOCATION 2>/dev/null || echo all))  |  Press ? for help)" \
+        --bind "alt-m:reload(${FZF_SCRIPT_PATH} --list md \$(cat $TEMP_LOCATION 2>/dev/null || echo all))+change-header(Markdown Files @ \$(${FZF_SCRIPT_PATH} --get-location-name \$(cat $TEMP_LOCATION 2>/dev/null || echo all))  |  Press ? for help)" \
+        --bind "alt-e:reload(${FZF_SCRIPT_PATH} --list xlsx \$(cat $TEMP_LOCATION 2>/dev/null || echo all))+change-header(Excel Files @ \$(${FZF_SCRIPT_PATH} --get-location-name \$(cat $TEMP_LOCATION 2>/dev/null || echo all))  |  Press ? for help)" \
+        --bind "alt-p:reload(${FZF_SCRIPT_PATH} --list pdf \$(cat $TEMP_LOCATION 2>/dev/null || echo all))+change-header(PDF Files @ \$(${FZF_SCRIPT_PATH} --get-location-name \$(cat $TEMP_LOCATION 2>/dev/null || echo all))  |  Press ? for help)" \
+        --bind "alt-j:reload(${FZF_SCRIPT_PATH} --list json \$(cat $TEMP_LOCATION 2>/dev/null || echo all))+change-header(JSON Files @ \$(${FZF_SCRIPT_PATH} --get-location-name \$(cat $TEMP_LOCATION 2>/dev/null || echo all))  |  Press ? for help)" \
+        --bind "alt-y:reload(${FZF_SCRIPT_PATH} --list yaml \$(cat $TEMP_LOCATION 2>/dev/null || echo all))+change-header(YAML Files @ \$(${FZF_SCRIPT_PATH} --get-location-name \$(cat $TEMP_LOCATION 2>/dev/null || echo all))  |  Press ? for help)" \
+        --bind "alt-t:reload(${FZF_SCRIPT_PATH} --list txt \$(cat $TEMP_LOCATION 2>/dev/null || echo all))+change-header(Text Files @ \$(${FZF_SCRIPT_PATH} --get-location-name \$(cat $TEMP_LOCATION 2>/dev/null || echo all))  |  Press ? for help)" \
+        --bind "alt-s:reload(${FZF_SCRIPT_PATH} --list py \$(cat $TEMP_LOCATION 2>/dev/null || echo all))+change-header(Python Files @ \$(${FZF_SCRIPT_PATH} --get-location-name \$(cat $TEMP_LOCATION 2>/dev/null || echo all))  |  Press ? for help)" \
+        --bind "alt-k:reload(${FZF_SCRIPT_PATH} --list js \$(cat $TEMP_LOCATION 2>/dev/null || echo all))+change-header(JS/TS Files @ \$(${FZF_SCRIPT_PATH} --get-location-name \$(cat $TEMP_LOCATION 2>/dev/null || echo all))  |  Press ? for help)" \
+        --bind "ctrl-r:reload(eval \"\$(${FZF_SCRIPT_PATH} --live-search ${mode} \$(cat $TEMP_LOCATION 2>/dev/null || echo all))\")" \
+        --bind "ctrl-o:execute($OPEN_CMD {})" \
+        --bind "ctrl-c:execute(echo {} | $CLIPBOARD_CMD)" \
+{{- if eq $host.os "macos" }}
+        --bind 'ctrl-i:preview(file {}; echo ""; stat -f "Size: %z bytes\nModified: %Sm\nCreated: %SB" {})' \
+{{- else }}
+        --bind 'ctrl-i:preview(file {}; echo ""; stat --format="Size: %s bytes\nModified: %y" {})' \
+{{- end }}
+        --bind 'ctrl-/:change-preview-window(hidden|right:25%)' \
+        --info=inline \
+        --layout=reverse \
+        --height=90%
+}
+
+# Helper function to get file type name
+get_file_type_name() {
+    local mode=$1
+    local params=$(get_search_params "$mode")
+    echo "$params" | cut -d: -f3
+}
+
+# Main execution
+case "$1" in
+    --list)
+        # Output file list for fzf reload
+        if [[ -n "$2" ]]; then
+            output_file_list "$2" "${3:-all}"
+        fi
+        ;;
+    --get-location-name)
+        # Get location name for header
+        if [[ -n "$2" ]]; then
+            get_location_name "$2"
+        fi
+        ;;
+    --get-file-type)
+        # Get file type name for header
+        if [[ -n "$2" ]]; then
+            get_file_type_name "$2"
+        fi
+        ;;
+    --live-search)
+        # Output live search command
+        if [[ -n "$2" ]]; then
+            create_live_search "$2" "${3:-all}"
+        fi
+        ;;
+    --show-help)
+        # Show help page
+        show_help_page
+        ;;
+    --help)
+        echo "Advanced FZF file search with location filtering"
+        echo ""
+        echo "Usage: $0 [MODE] [LOCATION]"
+        echo ""
+        echo "Modes: all, xml, md, xlsx, pdf, json, yaml, txt, py, js"
+        echo ""
+        echo "Location Shortcuts (use Alt+number):"
+        echo "  Alt-1: All Locations"
+        echo "  Alt-2: GitHub"
+        echo "  Alt-3: Downloads"
+        echo "  Alt-4: Documents"
+        echo "  Alt-5: Obsidian"
+        echo "  Alt-6: Config"
+        echo "  Alt-7: Projects"
+        echo "  Alt-8: Zsh Config"
+        echo ""
+        echo "File Type Shortcuts:"
+        echo "  Alt-A: All files"
+        echo "  Alt-X: XML files"
+        echo "  Alt-M: Markdown files"
+        echo "  Alt-E: Excel files"
+        echo "  Alt-P: PDF files"
+        echo "  Alt-J: JSON files"
+        echo "  Alt-Y: YAML files"
+        echo "  Alt-T: Text files"
+        echo "  Alt-S: Python files"
+        echo "  Alt-K: JavaScript/TypeScript files"
+        echo ""
+        echo "Other Shortcuts:"
+        echo "  ?:      Show help page with all shortcuts"
+        echo "  Ctrl-R: Force refresh (live search)"
+        echo "  Ctrl-/: Toggle preview"
+        echo "  Ctrl-O: Open file"
+        echo "  Ctrl-C: Copy path to clipboard"
+        ;;
+    *)
+        # Interactive mode
+        selected=$(search_files "$1" "$2")
+
+        # Handle selected file
+        if [[ -n "$selected" ]]; then
+            echo "Selected: $selected"
+            echo ""
+            echo "Options:"
+            echo "  1) Open in default editor"
+            echo "  2) Open with system default"
+            echo "  3) Copy path to clipboard"
+            echo "  4) Show file info"
+            echo "  5) Copy file content to clipboard"
+            echo ""
+            read -p "Choose option (1-5): " choice
+
+            case $choice in
+                1)
+                    ${EDITOR:-vim} "$selected"
+                    ;;
+                2)
+                    $OPEN_CMD "$selected"
+                    ;;
+                3)
+                    echo -n "$selected" | $CLIPBOARD_CMD
+                    echo "Path copied to clipboard!"
+                    ;;
+                4)
+{{- if eq $host.os "macos" }}
+                    stat -f "File: %N\nSize: %z bytes\nModified: %Sm\nCreated: %SB\nPermissions: %Sp" "$selected"
+{{- else }}
+                    stat --format="File: %n\nSize: %s bytes\nModified: %y\nPermissions: %A" "$selected"
+{{- end }}
+                    ;;
+                5)
+                    cat "$selected" | $CLIPBOARD_CMD
+                    echo "File content copied to clipboard!"
+                    ;;
+                *)
+                    echo "Invalid option"
+                    ;;
+            esac
+        fi
+        ;;
+esac
