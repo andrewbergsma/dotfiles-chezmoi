@@ -35,9 +35,8 @@ font-thicken = true
 adjust-cell-height = -10%
 
 # Keybinds
-# Send Shift+Enter as CSI u sequence (ESC [ 13 ; 2 u) for tmux extended-keys
-# This prevents it from being interpreted as C-j (newline/pane navigation)
-keybind = shift+enter=csi:13;2u
+# Shift+Enter sends ESC+CR instead of LF to avoid C-j (pane navigation) conflict
+keybind = shift+enter=text:\x1b\r
 
 # Pass Alt+Arrow keys through to tmux (unbind default word navigation)
 keybind = alt+left=unbind
